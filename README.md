@@ -41,7 +41,7 @@ This repository contains a Windows Explorer context menu extension implemented a
 
 ### Additional DLL Dependencies:
 
-1. **Die DLL ([Download Link](https://github.com/horsicq/die_library))**: The compiled Die DLL file. Add it to your project along with Qt5Core.dll and Qt5Script.dl
+1. **Die DLL [Download Link](https://github.com/horsicq/die_library)**: The compiled Die DLL file. Add it to your project along with Qt5Core.dll and Qt5Script.dl
 
 ## License
 
