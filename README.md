@@ -14,7 +14,7 @@ This repository contains a Windows Explorer context menu extension implemented a
 
 - **Powered by Detect It Easy:** The project incorporates functionality from "Detect It Easy" by Horsicq. [Link to Detect It Easy GitHub Repository](https://github.com/horsicq/DIE-engine)
 
-- **Toast Notifications via WinToast:** Toast notifications are facilitated by the WinToast library developed by <developer_name>. [Link to WinToast GitHub Repository](https://github.com/mohabouje/WinToast)
+- **Toast Notifications via WinToast:** Toast notifications are facilitated by the WinToast library developed by Mohabouje. [Link to WinToast GitHub Repository](https://github.com/mohabouje/WinToast)
 
 ## Installation
 
