@@ -1,5 +1,5 @@
 # DieShell
-DieShell extnesion 
+DieShell Extension 
 
 
 This repository contains a Windows Explorer context menu extension implemented as a dynamic link library (DLL) in C++. The context menu extension, named "Die," adds a custom menu item to the Windows Explorer context menu for selected files.
