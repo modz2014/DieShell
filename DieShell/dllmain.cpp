@@ -150,6 +150,11 @@ public:
             return S_OK;
         }
         WinToastTemplate templ = CustomTemplate(fileInfo); // Use the custom template
+        ToastHandler* toastHandler = new ToastHandler();
+        toastHandler->setFilePath(filePath);
+         if (WinToast::instance()->showToast(templ, toastHandler) == -1L) {
+         std::cerr << "Could not launch your toast notification!" << std::endl;
+         }
 
         if (WinToast::instance()->showToast(templ, new ToastHandler()) == -1L) {
             std::cerr << "Could not launch your toast notification!" << std::endl;
