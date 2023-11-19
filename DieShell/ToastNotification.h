@@ -51,29 +51,44 @@ public:
         //MessageBox(NULL, message.c_str(), L"Debug Message", MB_OK);
     }
 
-    void OpenProgram(HMODULE g_hModule, const std::wstring& filePath) const {
+   static void OpenProgram(HMODULE g_hModule, const std::wstring& filePath) {
+    // Display the file path
+    std::wstring filePathMessage = L"File Path: " + filePath;
 
-        wchar_t dllPath[MAX_PATH];
-        GetModuleFileName(g_hModule, dllPath, MAX_PATH);
-        PathRemoveFileSpec(dllPath);
 
-        std::wstring dllPathMessage = L"DLL Path: " + std::wstring(dllPath);
-        // MessageBox(NULL, dllPathMessage.c_str(), L"Debug Information", MB_OK);
-        std::wstring dllpath = std::wstring(dllPath) + L"\\die.exe";
-        std::wstring parameters = L"\"" + filePath;
+    wchar_t dllPath[MAX_PATH];
+    GetModuleFileName(g_hModule, dllPath, MAX_PATH);
+    PathRemoveFileSpec(dllPath);
 
-        std::wstring command = L"Opening: " + dllpath + L" " + parameters;
-        //MessageBox(NULL, command.c_str(), L"Debug Message", MB_OK);
+    std::wstring dllPathMessage = L"DLL Path: " + std::wstring(dllPath);
 
-        HINSTANCE result = ShellExecute(NULL, L"open", dllpath.c_str(), parameters.c_str(), NULL, SW_SHOW);
+    std::wstring dllpath = std::wstring(dllPath) + L"\\die.exe";
+    std::wstring parameters = L"\"" + filePath + L"\"";
 
-        if ((int)result <= 32) {
-            std::wstring message = L"ShellExecute failed, error: " + std::to_wstring((int)result);
-            MessageBox(NULL, message.c_str(), L"Debug Message", MB_OK);
-        }
+    std::wstring command = L"Opening: " + dllpath + L" " + parameters;
+
+
+    SHELLEXECUTEINFO shExInfo = { 0 };
+    shExInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    shExInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    shExInfo.lpFile = dllpath.c_str(); // Corrected variable name
+    shExInfo.lpParameters = parameters.c_str();
+    shExInfo.nShow = SW_SHOWNORMAL;
+
+    if (ShellExecuteEx(&shExInfo)) {
+        // Successfully started the associated program
+        // You can add additional handling if needed
     }
+    else {
+        // Failed to start the associated program
+        // You can add error handling here
 
+    }
+}
 
+void setFilePath(const std::wstring& path) {
+    filePath = path;
+}
 
 
     void toastActivated() const override {
