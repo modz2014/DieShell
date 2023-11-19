@@ -16,6 +16,14 @@ This repository contains a Windows Explorer context menu extension implemented a
 
 - **Toast Notifications via WinToast:** Toast notifications are facilitated by the WinToast library developed by Mohabouje. [Link to WinToast GitHub Repository](https://github.com/mohabouje/WinToast)
 
+## Feature Suggestions
+
+Feel free to suggest new features or improvements. One potential feature idea is:
+
+- **Download Protection Notification:** Implement a feature where a toast notification pops up when a protected file is downloaded. This notification could provide additional information about the downloaded file and its protection status.
+
+If you have other feature suggestions or ideas, please share them with the community. Contributions and feedback are always welcome!
+
 ## Installation
 
 1. Compile the source code into a DLL.
