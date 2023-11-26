@@ -27,6 +27,56 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 :--------------------------------------
 
+set DOWNLOAD_URL=https://github.com/horsicq/DIE-engine/releases/download/3.08/die_win64_portable_3.08_x64.zip
+set DOWNLOAD_FILE=die_win64_portable_3.08_x64.zip
+set EXTRACT_FOLDER=Die
+set INNER_FOLDER=Die
+
+echo Creating folders %INNER_FOLDER%...
+mkdir %EXTRACT_FOLDER%\\%INNER_FOLDER%
+
+
+echo Downloading %DOWNLOAD_FILE%...
+curl -LJO %DOWNLOAD_URL%
+
+echo Extracting files...
+tar -xf %DOWNLOAD_FILE% -C %EXTRACT_FOLDER%\\%INNER_FOLDER%
+
+echo Cleanup: Removing downloaded ZIP file...
+del %DOWNLOAD_FILE%
+
+echo Process completed.
+set DOWNLOAD_URL=https://github.com/horsicq/die_library/releases/download/Beta/dielib_win64_portable_3.09_x64.zip
+set DOWNLOAD_FILE=dielib_win64_portable_3.09_x64.zip
+
+:CheckFiles
+echo Checking if DieShell.dll exists...
+if exist %EXTRACT_FOLDER%\\%INNER_FOLDER%\\DieShell.dll (
+    echo DieShell.dll found.
+) else (
+    echo DieShell.dll not found. Make sure DieShell.dll is in the directory Die\\Die.
+    pause
+    goto CheckFiles
+)
+
+echo Checking if die.dll exists...
+if exist %EXTRACT_FOLDER%\\%INNER_FOLDER%\\die.dll (
+    echo die.dll found.
+) else (
+ echo die.dll not found. Downloading die.dll...
+
+echo Downloading %DOWNLOAD_FILE%...
+curl -LJO %DOWNLOAD_URL%
+tar -xf %DOWNLOAD_FILE% --noanchored 'die.dll' -C %EXTRACT_FOLDER%\\%INNER_FOLDER%
+del %DOWNLOAD_FILE%
+    if exist %EXTRACT_FOLDER%\\%INNER_FOLDER%\\die.dll (
+        echo die.dll downloaded and extracted successfully.
+    ) else (
+        echo Failed to download or extract die.dll. Please check the download URL and extraction path.
+        pause
+    )
+)
+
 powershell -Command "New-SelfSignedCertificate -Type Custom -Subject 'CN=Die' -KeyUsage DigitalSignature -FriendlyName 'SelfSignCert' -CertStoreLocation 'Cert:\CurrentUser\My' -TextExtension @('2.5.29.37={text}1.3.6.1.5.5.7.3.3', '2.5.29.19={text}')"
 set /p password="Enter a password for the PFX file: "
 
