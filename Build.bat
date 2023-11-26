@@ -39,11 +39,13 @@ if not defined thumbprint (
     exit /b 1
 )
 
+
 set "batch_dir=%~dp0"
 powershell -Command "Export-PfxCertificate -Cert Cert:\CurrentUser\My\%thumbprint% -FilePath '%batch_dir%Die.pfx' -Password (ConvertTo-SecureString -String '%password%' -Force -AsPlainText)"
-:: Export the certificate to CER file
-powershell -Command "Export-Certificate -Cert Cert:\CurrentUser\My\%thumbprint% -FilePath '%batch_dir%Die.cer'"
 
+echo Removing certificate from CertMgr...
+certutil -delstore My %thumbprint%
+powershell -Command "Remove-Item -Path Cert:\CurrentUser\My\%thumbprint%"
 
 :: Run the makeappx.exe command and redirect output to a log file
 "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\makeappx.exe" pack /d Die/ /p Die.msix /nv
@@ -64,10 +66,40 @@ for /R %DIRECTORY% %%F in (*.msix) do (
 
 :: Import the certificate
 set "batch_dir=%~dp0"
-set "CERT_FILE=%batch_dir%Die.cer"
 
-:: Add the certificate to the "Trusted People" store
-certutil -addstore TrustedPeople %CERT_FILE%
 
-echo Certificate added to Trusted People store.
-pause
+:: Remove any existing certificates with the same subject name
+for /f "tokens=*" %%a in ('powershell -Command "Get-ChildItem -Path Cert:\LocalMachine\TrustedPeople | Where-Object { $_.Subject -eq 'CN=Die' } | Select-Object -ExpandProperty Thumbprint"') do (
+    certutil -delstore TrustedPeople %%a
+)
+
+:: Extract the certificate from the MSIX file
+powershell -Command "& { $msixFile = '%MSIX_PATH%'; if (!(Test-Path -Path $msixFile)) { Write-Host 'Error: MSIX file not found.'; exit }; $signature = Get-AuthenticodeSignature -FilePath $msixFile; $certificate = $signature.SignerCertificate; $certificate.Export('Cert') | Set-Content -Encoding Byte 'certificate.cer'; }"
+
+:: Import the certificate to the TrustedPeople store
+certutil -addstore -f TrustedPeople certificate.cer
+
+:: Clean up
+del certificate.cer
+
+
+:: Delete the .pfx and .cer files
+del "%batch_dir%Die.pfx" /f /q
+
+:: Ask the user if they want to install the package manually
+set /p user_input="Do you want to install the package manually? (yes/no): "
+if /I "%user_input%" EQU "yes" (
+    echo Please install the package manually.
+) else (
+    echo Installing...
+    powershell -Command "Add-AppPackage -Path %MSIX_PATH%"
+)
+
+
+
+
+:: Wait for 10 seconds
+timeout /t 10
+
+:: End of the script
+exit
