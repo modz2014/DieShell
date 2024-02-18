@@ -9,7 +9,7 @@
 #include <Strsafe.h>
 #include <VersionHelpers.h>
 #include <Shobjidl.h>
-#include "ToastNotification.h"
+
 
 
 using namespace Microsoft::WRL;
@@ -98,31 +98,11 @@ public:
 * @param cmdState Output parameter to receive the state of the context menu item (EXPCMDSTATE).
 * @return HRESULT indicating success (S_OK) or failure.
 */
-	IFACEMETHODIMP GetState(_In_opt_ IShellItemArray* selection, _In_ BOOL okToBeSlow, _Out_ EXPCMDSTATE* cmdState) {
-		// Check if the Windows version is 11 or greater
-		bool isWindows11OrGreater = IsWindowsVersionOrGreater(10, 0, 0);
-
-		if (isWindows11OrGreater)
-		{
-			// If the Windows version is 11 or greater and a selection is provided and it's okay to be slow...
-			if (selection && okToBeSlow)
-			{
-				// Enable the context menu item
-				*cmdState = ECS_ENABLED;
-				return S_OK;
-			}
-			// Hide the context menu item on Windows 11 or greater
-			*cmdState = ECS_HIDDEN;
-		}
-		else
-		{
-			// Handle other cases, if necessary.
-			// Show the context menu item by default on other versions.
-			*cmdState = ECS_ENABLED;
-		}
-
-		return S_OK;
-	}
+    IFACEMETHODIMP GetState(_In_opt_ IShellItemArray* selection, _In_ BOOL okToBeSlow, _Out_ EXPCMDSTATE* cmdState)
+    {
+        *cmdState = ECS_ENABLED;
+        return S_OK;
+    }
 /**
 * @brief Invoke executes the context menu item action.
 *
@@ -134,71 +114,60 @@ public:
 * @param bindContext The bind context.
 * @return HRESULT indicating success (S_OK) or failure.
 */
-	IFACEMETHODIMP Invoke(_In_opt_ IShellItemArray* selection, _In_opt_ IBindCtx*) noexcept try {
-		if (!selection) {
-			// Debug message
-			MessageBox(nullptr, L"Invalid argument", L"Debug Info", MB_OK);
-			return E_INVALIDARG;
-		}
 
-		DWORD count;
-		RETURN_IF_FAILED(selection->GetCount(&count));
+IFACEMETHODIMP Invoke(_In_opt_ IShellItemArray* selection, _In_opt_ IBindCtx*) noexcept try {
+    if (!selection) {
+        // Debug message
+        MessageBox(nullptr, L"Invalid argument", L"Debug Info", MB_OK);
+        return E_INVALIDARG;
+    }
 
-		if (count == 0) {
-			// Debug message
-			MessageBox(nullptr, L"No items to process", L"Debug Info", MB_OK);
-			return S_OK; // No items to process
-		}
+    DWORD count;
+    RETURN_IF_FAILED(selection->GetCount(&count));
 
-		ComPtr<IShellItem> item;
-		RETURN_IF_FAILED(selection->GetItemAt(0, &item));
+    if (count == 0) {
+        // Debug message
+        MessageBox(nullptr, L"No items to process", L"Debug Info", MB_OK);
+        return S_OK; // No items to process
+    }
 
-		PWSTR filePath;
-		RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
-		wil::unique_cotaskmem_string filePathCleanup(filePath);
+    ComPtr<IShellItem> item;
+    RETURN_IF_FAILED(selection->GetItemAt(0, &item));
 
-		// Checking files being downloaded 
+    PWSTR filePath;
+    RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
+    wil::unique_cotaskmem_string filePathCleanup(filePath);
 
+    // Debug: Display the file path in a message box
+    std::wstring message = L"File path: " + std::wstring(filePath);
+   // MessageBox(nullptr, message.c_str(), L"Debug Information", MB_OK);
 
-		// Debug: Display the file path in a message box
-		std::wstring message = L"File path: " + std::wstring(filePath);
-		// MessageBox(NULL, message.c_str(), L"Debug Information", MB_OK);
+    // Get the directory containing the DLL as the base path for Die.exe
+    wchar_t dllDirectory[MAX_PATH];
+    GetModuleFileName(g_hModule, dllDirectory, MAX_PATH);
+    PathRemoveFileSpec(dllDirectory);
 
-		wchar_t dllPath[MAX_PATH];
-		GetModuleFileName(g_hModule, dllPath, MAX_PATH);
-		PathRemoveFileSpec(dllPath);
+    // Construct the full path to Die.exe
+    std::wstring dieExePath = std::wstring(dllDirectory) + L"\\Die.exe";
 
-		std::wstring dllPathMessage = L"DLL Path: " + std::wstring(dllPath);
-		//MessageBox(NULL, dllPathMessage.c_str(), L"Debug Information", MB_OK);
-		std::wstring pwszDatabase = std::wstring(dllPath) + L"\\db";
-		std::wstring fileInfo = GetFileInformation(filePath, pwszDatabase);
+    // Check if Die.exe exists at the specified path
+    if (GetFileAttributes(dieExePath.c_str()) == INVALID_FILE_ATTRIBUTES) {
+        MessageBox(nullptr, L"Die.exe not found", L"Error", MB_OK | MB_ICONERROR);
+        return E_FAIL;
+    }
 
-		// Toast notification stuff 
-		WinToast::WinToastError error;
-		WinToast::instance()->setAppName(L"MyApp");
-		const auto aumi = WinToast::configureAUMI(L"company", L"wintoast", L"wintoastexample", L"20201012");
-		WinToast::instance()->setAppUserModelId(aumi);
+    // Prepare the command-line argument (file path)
+    std::wstring commandLineArgs = L"\"" + std::wstring(filePath) + L"\"";
 
-		// Run the toast notification code on the UI thread
-		if (!WinToast::instance()->initialize()) {
-			std::wcerr << L"Error, your system is not compatible!" << std::endl;
-			return S_OK;
-		}
-		WinToastTemplate templ = CustomTemplate(fileInfo); // Use the custom template
-		ToastHandler* toastHandler = new ToastHandler();
-		toastHandler->setFilePath(filePath);
-		if (WinToast::instance()->showToast(templ, toastHandler) == -1L) {
-			std::cerr << "Could not launch your toast notification!" << std::endl;
-		}
+    // Launch Die.exe with the file path as a command-line argument
+    if (!ShellExecute(nullptr, L"open", dieExePath.c_str(), commandLineArgs.c_str(), nullptr, SW_SHOWNORMAL)) {
+        MessageBox(nullptr, L"Failed to execute Die.exe", L"Error", MB_OK | MB_ICONERROR);
+        return E_FAIL;
+    }
 
-		if (WinToast::instance()->showToast(templ, new ToastHandler()) == -1L) {
-			std::cerr << "Could not launch your toast notification!" << std::endl;
-		}
-
-		return S_OK;
-	}
-
-	CATCH_RETURN();
+    return S_OK;
+}
+CATCH_RETURN();
 
 	IFACEMETHODIMP GetFlags(_Out_ EXPCMDFLAGS* flags) { *flags = ECF_DEFAULT; return S_OK; }
 	IFACEMETHODIMP EnumSubCommands(_COM_Outptr_ IEnumExplorerCommand** enumCommands) { *enumCommands = nullptr; return E_NOTIMPL; }
