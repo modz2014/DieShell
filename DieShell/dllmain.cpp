@@ -108,7 +108,7 @@ public:
 *
 * This method is called to perform the action associated with the context menu item. It displays debug messages
 * for invalid arguments or if there are no items to process. It retrieves the file path of the selected item,
-* extracts information about the file, and shows a toast notification.
+* extracts information about the file.
 *
 * @param selection The selected items in the shell.
 * @param bindContext The bind context.
