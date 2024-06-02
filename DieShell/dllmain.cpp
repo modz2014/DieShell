@@ -9,6 +9,7 @@
 #include <Strsafe.h>
 #include <VersionHelpers.h>
 #include <Shobjidl.h>
+#include <string>
 
 
 
