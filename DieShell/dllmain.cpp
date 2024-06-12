@@ -58,34 +58,34 @@ public:
 * @return HRESULT indicating success (S_OK) or failure (E_FAIL).
 */
 	IFACEMETHODIMP GetIcon(_In_opt_ IShellItemArray* items, _Outptr_result_nullonfailure_ PWSTR* iconPath) {
-		*iconPath = nullptr;
-		PWSTR itemPath = nullptr;
+	*iconPath = nullptr;
+	PWSTR itemPath = nullptr;
 
-		if (items) {
-			DWORD count;
-			RETURN_IF_FAILED(items->GetCount(&count));
+	if (items) {
+		DWORD count;
+		RETURN_IF_FAILED(items->GetCount(&count));
 
-			if (count > 0) {
-				ComPtr<IShellItem> item;
-				RETURN_IF_FAILED(items->GetItemAt(0, &item));
+		if (count > 0) {
+			ComPtr<IShellItem> item;
+			RETURN_IF_FAILED(items->GetItemAt(0, &item));
 
-				RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &itemPath));
-				wil::unique_cotaskmem_string itemPathCleanup(itemPath);
+			RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &itemPath));
+			wil::unique_cotaskmem_string itemPathCleanup(itemPath);
 
-				WCHAR modulePath[MAX_PATH];
-				if (GetModuleFileNameW(g_hModule, modulePath, ARRAYSIZE(modulePath))) {
-					PathRemoveFileSpecW(modulePath);
-					StringCchCatW(modulePath, ARRAYSIZE(modulePath), L"\\Die.ico");
+			WCHAR modulePath[MAX_PATH];
+			if (GetModuleFileNameW(g_hModule, modulePath, ARRAYSIZE(modulePath))) {
+				PathRemoveFileSpecW(modulePath);
+				StringCchCatW(modulePath, ARRAYSIZE(modulePath), L"\\Die.exe"); 
 
-					auto iconPathStr = wil::make_cotaskmem_string_nothrow(modulePath);
-					if (iconPathStr) {
-						*iconPath = iconPathStr.release();
-					}
+				auto iconPathStr = wil::make_cotaskmem_string_nothrow(modulePath);
+				if (iconPathStr) {
+					*iconPath = iconPathStr.release();
 				}
 			}
 		}
-		return *iconPath ? S_OK : E_FAIL;
 	}
+	return *iconPath ? S_OK : E_FAIL;
+}
 
 	IFACEMETHODIMP GetToolTip(_In_opt_ IShellItemArray*, _Outptr_result_nullonfailure_ PWSTR* infoTip) { *infoTip = nullptr; return E_NOTIMPL; }
 	IFACEMETHODIMP GetCanonicalName(_Out_ GUID* guidCommandName) { *guidCommandName = GUID_NULL; return S_OK; }
