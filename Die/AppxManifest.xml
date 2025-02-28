@@ -25,7 +25,7 @@
   
   <Applications>
     <Application Id="App" Executable="Die\die.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="Die" Description="Detect it easy" BackgroundColor="transparent" Square150x150Logo="Images\Square150x150Logo.png" Square44x44Logo="Images\Square44x44Logo.png">
+      <uap:VisualElements DisplayName="Detect it easy" Description="Detect it easy" BackgroundColor="transparent" Square150x150Logo="Images\Square150x150Logo.png" Square44x44Logo="Images\Square44x44Logo.png">
         
         <uap:DefaultTile/>
       </uap:VisualElements>
@@ -40,7 +40,7 @@
         </desktop4:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:SurrogateServer DisplayName="DIE">
+            <com:SurrogateServer DisplayName="Detect it easy">
               <com:Class Id="7A1E471F-0D43-4122-B1C4-D1AACE76CE9B" Path="Die\DieShell.dll" ThreadingModel="STA"/>
             </com:SurrogateServer>
           </com:ComServer>
