@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Package IgnorableNamespaces="uap uap2 uap3 rescap desktop desktop4 desktop5 uap10 com build" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4" xmlns:desktop5="http://schemas.microsoft.com/appx/manifest/desktop/windows10/5" xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10" xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build">
   
-  
   <Identity Name="Die" ProcessorArchitecture="x86" Publisher="CN=Die" Version="1.0.9.0"/>
   <Properties>
     <DisplayName>Die</DisplayName>
@@ -16,7 +15,6 @@
   <Resources>
     <Resource Language="EN-US"/>
     <Resource uap:Scale="200"/>
-    
   </Resources>
   <Capabilities>
     <Capability Name="internetClient"/>
@@ -26,7 +24,6 @@
   <Applications>
     <Application Id="App" Executable="Die\die.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements DisplayName="Detect it easy" Description="Detect it easy" BackgroundColor="transparent" Square150x150Logo="Images\Square150x150Logo.png" Square44x44Logo="Images\Square44x44Logo.png">
-        
         <uap:DefaultTile/>
       </uap:VisualElements>
       
@@ -48,14 +45,4 @@
       </Extensions>
     </Application>
   </Applications>
-  <build:Metadata>
-    <build:Item Name="Microsoft.Build.DesktopBridge.Tasks.dll" Version="17.6.36265.37517"/>
-    <build:Item Name="TargetFrameworkMoniker" Value=".NETFramework,Version=v4.5.1"/>
-    <build:Item Name="VisualStudio" Version="17.0"/>
-    <build:Item Name="VisualStudioEdition" Value="Microsoft Visual Studio Professional 2022"/>
-    <build:Item Name="OperatingSystem" Version="10.0.22621.1991 (WinBuild.160101.0800)"/>
-    <build:Item Name="Microsoft.Build.AppxPackage.dll" Version="17.6.36415.52745"/>
-    <build:Item Name="ProjectGUID" Value="c166c715-5db3-4d2a-a65d-2002c0b8d705"/>
-    <build:Item Name="makepri.exe" Version="10.0.22621.755 (WinBuild.160101.0800)"/>
-  </build:Metadata>
 </Package>
