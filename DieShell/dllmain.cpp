@@ -1,4 +1,3 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
 #include <wrl/module.h>
 #include <wrl/implements.h>
 #include <shobjidl_core.h>
